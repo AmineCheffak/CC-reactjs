@@ -1,10 +1,9 @@
 import { memo } from 'react'
 import { GenreBadge } from './GenreBadge'
 import { useNavigate } from 'react-router-dom'
+import { Eye, Send, RotateCcw, Trash2 } from 'lucide-react'
 
-// Carte de livre affichée dans le catalogue
-// Reçoit ses données via props
-function BookCardInner({ livre, onPret }) {
+function BookCardInner({ livre, onPret, onDelete }) {
   const navigate = useNavigate()
 
   return (
@@ -25,7 +24,8 @@ function BookCardInner({ livre, onPret }) {
           className="btn btn-secondary btn-sm"
           onClick={() => navigate(`/livres/${livre.id}`)}
         >
-          Voir
+          <Eye size={18} className="mr-2" />
+          <span>Voir</span>
         </button>
         {livre.disponible ? (
           <button
@@ -33,7 +33,8 @@ function BookCardInner({ livre, onPret }) {
             className="btn btn-primary btn-sm"
             onClick={() => navigate(`/livres/${livre.id}/preter`)}
           >
-            Preter
+            <Send size={18} className="mr-2" />
+            <span>Prêter</span>
           </button>
         ) : (
           <button
@@ -41,13 +42,21 @@ function BookCardInner({ livre, onPret }) {
             className="btn btn-success btn-sm"
             onClick={() => onPret && onPret(livre.id)}
           >
-            Rendre
+            <RotateCcw size={18} className="mr-2" />
+            <span>Rendre</span>
           </button>
         )}
+        <button
+          type="button"
+          className="btn btn-danger btn-sm"
+          onClick={() => onDelete && onDelete(livre.id)}
+        >
+          <Trash2 size={18} className="mr-2" />
+          <span>Supprimer</span>
+        </button>
       </div>
     </div>
   )
 }
 
-// Utilisation de memo pour eviter les re-renders inutiles
 export const BookCard = memo(BookCardInner)

@@ -5,8 +5,12 @@ import { ThemeContext } from './ThemeContext'
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     // Lire le thème depuis localStorage au démarrage
-    const saved = localStorage.getItem('biblioapp_theme')
-    if (saved) return saved
+    try {
+      const saved = localStorage.getItem('biblioapp_theme')
+      if (saved) return saved
+    } catch {
+      // localStorage non disponible (SSR, etc.)
+    }
     // Sinon détecter la préférence système
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   })

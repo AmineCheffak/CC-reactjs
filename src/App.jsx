@@ -9,7 +9,6 @@ import { AjoutLivre } from './pages/AjoutLivre'
 import { FicheLivre } from './pages/FicheLivre'
 import { Pret } from './pages/Pret'
 import { PageIntrouvable } from './pages/PageIntrouvable'
-import './App.css'
 
 function App() {
   return (
