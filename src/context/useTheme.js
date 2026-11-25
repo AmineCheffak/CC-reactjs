@@ -1,7 +1,6 @@
 import { useContext } from 'react'
 import { ThemeContext } from './ThemeContext'
 
-// Hook personnalisé pour accéder au contexte du thème
 export function useTheme() {
   const context = useContext(ThemeContext)
   if (!context) {

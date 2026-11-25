@@ -2,10 +2,8 @@ import { useReducer, useEffect } from 'react'
 import { libraryReducer, initialState } from '../reducers/libraryReducer'
 import { LibraryContext } from './LibraryContext'
 
-// Clé localStorage
 const STORAGE_KEY = 'biblioapp_livres'
 
-// Données d'exemple (en dehors du composant pour éviter re-création)
 const LIVRES_EXEMPLE = [
   {
     id: '1',

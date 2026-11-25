@@ -1,7 +1,6 @@
 import { useContext } from 'react'
 import { LibraryContext } from './LibraryContext'
 
-// Hook personnalisé pour accéder au contexte de la bibliothèque
 export function useLibrary() {
   const context = useContext(LibraryContext)
   if (!context) {

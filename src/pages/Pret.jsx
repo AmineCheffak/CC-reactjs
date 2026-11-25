@@ -4,13 +4,11 @@ import { useLibrary } from '../hooks/useLibrary'
 import { useEffect, useRef } from 'react'
 import { Calendar, X, BookPlus } from 'lucide-react'
 
-// Page de prêt d'un livre avec react-hook-form
 export function Pret() {
     const { id } = useParams()
     const { livres, preterLivre, isLoaded } = useLibrary()
     const navigate = useNavigate()
 
-    // Référence pour le champ nom de l'élève
     const nomRef = useRef(null)
 
     const {
@@ -25,14 +23,13 @@ export function Pret() {
         }
     })
 
-    // Enregistrement du champ élève
     const eleveRegister = register('eleve', {
         required: "Le nom de l'élève est obligatoire",
         validate: (value) =>
-            value.trim().length > 0 || "Le nom de l'élève est obligatoire"
+            value.trim().length > 0 ||
+            "Le nom de l'élève est obligatoire"
     })
 
-    // Focus automatique sur le champ nom
     useEffect(() => {
         const timer = setTimeout(() => {
             if (nomRef.current) {
@@ -43,7 +40,6 @@ export function Pret() {
         return () => clearTimeout(timer)
     }, [])
 
-    // Calculer la date minimale de retour (demain)
     const getDateMinimaleRetour = () => {
         const aujourdhui = new Date()
         const demain = new Date(aujourdhui)
@@ -57,7 +53,6 @@ export function Pret() {
         return `${annee}-${mois}-${jour}`
     }
 
-    // Obtenir la date actuelle au format YYYY-MM-DD
     const getDateAujourdhui = () => {
         const date = new Date()
 
@@ -68,14 +63,11 @@ export function Pret() {
         return `${annee}-${mois}-${jour}`
     }
 
-    // Soumission du formulaire
     const onSubmit = (data) => {
         const nomEleve = data.eleve.trim()
 
-        // Date de sortie = aujourd'hui
         const dateSortie = getDateAujourdhui()
 
-        // Emprunter le livre
         preterLivre(
             id,
             nomEleve,
@@ -83,7 +75,6 @@ export function Pret() {
             data.dateRetour
         )
 
-        // Redirection avec message flash
         navigate(`/livres/${id}`, {
             state: {
                 message: `Livre prêté à ${nomEleve}`,
@@ -92,29 +83,48 @@ export function Pret() {
         })
     }
 
-    // Attendre le chargement des données
+    const inputClass =
+        'w-full min-h-10 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-800'
+
+    const labelClass =
+        'mb-2 block text-sm text-gray-700 dark:text-gray-300'
+
+    const errorClass =
+        'mt-1 block text-sm text-red-600 dark:text-red-400'
+
+    const buttonPrimary =
+        'inline-flex items-center justify-center rounded-lg bg-gray-900 px-5 py-2.5 text-sm text-white transition hover:bg-gray-700 disabled:cursor-not-allowed dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200'
+
+    const buttonSecondary =
+        'inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-300 dark:hover:bg-neutral-800'
+
     if (!isLoaded) {
         return (
-            <div className="page flex flex-col items-center justify-center min-h-[400px]">
-                <p className="text-gray-600 dark:text-slate-400">Chargement...</p>
+            <div className="flex min-h-[400px] items-center justify-center bg-gray-50 dark:bg-neutral-950">
+                <p className="text-gray-600 dark:text-gray-400">
+                    Chargement...
+                </p>
             </div>
         )
     }
 
-    // Vérifier si le livre existe
     const livre = livres.find(
         l => String(l.id) === String(id)
     )
 
     if (!livre) {
         return (
-            <div className="page flex flex-col items-center justify-center min-h-[400px]">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-4">Livre introuvable</h1>
+            <div className="flex min-h-[400px] flex-col items-center justify-center bg-gray-50 px-4 text-center dark:bg-neutral-950">
+                <h1 className="mb-4 text-2xl text-gray-900 dark:text-white">
+                    Livre introuvable
+                </h1>
 
-                <p className="text-gray-600 dark:text-slate-400 mb-6">Le livre demandé n'existe pas.</p>
+                <p className="mb-6 text-gray-600 dark:text-gray-400">
+                    Le livre demandé n'existe pas.
+                </p>
 
                 <button
-                    className="btn btn-primary"
+                    className={buttonPrimary}
                     onClick={() => navigate('/')}
                 >
                     <BookPlus size={18} className="mr-2" />
@@ -124,18 +134,19 @@ export function Pret() {
         )
     }
 
-    // Vérifier si le livre est disponible
     if (!livre.disponible) {
         return (
-            <div className="page flex flex-col items-center justify-center min-h-[400px]">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-4">Livre non disponible</h1>
+            <div className="flex min-h-[400px] flex-col items-center justify-center bg-gray-50 px-4 text-center dark:bg-neutral-950">
+                <h1 className="mb-4 text-2xl text-gray-900 dark:text-white">
+                    Livre non disponible
+                </h1>
 
-                <p className="text-gray-600 dark:text-slate-400 mb-6">
+                <p className="mb-6 text-gray-600 dark:text-gray-400">
                     Ce livre n'est pas disponible pour un prêt.
                 </p>
 
                 <button
-                    className="btn btn-primary"
+                    className={buttonPrimary}
                     onClick={() => navigate('/')}
                 >
                     <BookPlus size={18} className="mr-2" />
@@ -146,106 +157,116 @@ export function Pret() {
     }
 
     return (
-        <div className="page pret">
+        <div className="min-h-screen bg-gray-50 px-4 py-8 dark:bg-neutral-950 sm:px-6">
 
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-6">
-                Prêt : {livre.titre}
-            </h1>
+            <div className="mx-auto max-w-2xl">
 
-            <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
+                <div className="mb-6">
+                    <h1 className="text-2xl text-gray-900 dark:text-white">
+                        Prêt : {livre.titre}
+                    </h1>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        Remplissez les informations pour enregistrer le prêt.
+                    </p>
+                </div>
 
-                    {/* Nom de l'élève */}
-                    <div className="mb-5">
+                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-8">
 
-                        <label
-                            htmlFor="eleve"
-                            className="block mb-2 text-sm font-medium text-gray-700 dark:text-slate-300"
-                        >
-                            Nom de l'élève *
-                        </label>
+                    <form onSubmit={handleSubmit(onSubmit)}>
 
-                        <input
-                            id="eleve"
-                            {...eleveRegister}
-                            ref={(element) => {
-                                eleveRegister.ref(element)
-                                nomRef.current = element
-                            }}
-                            className="w-full min-h-9 px-3 py-2 text-base border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                            placeholder="Entrez le nom de l'élève"
-                        />
+                        <div className="mb-6">
 
-                        {errors.eleve && (
-                            <span className="mt-1 text-sm text-red-600 dark:text-red-400">
-                                {errors.eleve.message}
-                            </span>
-                        )}
-
-                    </div>
-
-                    {/* Date de retour */}
-                    <div className="mb-5">
-
-                        <label
-                            htmlFor="dateRetour"
-                            className="block mb-2 text-sm font-medium text-gray-700 dark:text-slate-300"
-                        >
-                            Date de retour prévue *
-                        </label>
-
-                        <div className="relative">
-
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-400" size={18} />
+                            <label
+                                htmlFor="eleve"
+                                className={labelClass}
+                            >
+                                Nom de l'élève *
+                            </label>
 
                             <input
-                                id="dateRetour"
-                                type="date"
-                                {...register('dateRetour', {
-                                    required: 'La date de retour est obligatoire',
-
-                                    validate: (value) =>
-                                        value >= getDateMinimaleRetour() ||
-                                        'La date de retour doit être dans le futur'
-                                })}
-                                className="w-full min-h-9 pl-10 pr-3 py-2 text-base border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                                min={getDateMinimaleRetour()}
+                                id="eleve"
+                                {...eleveRegister}
+                                ref={(element) => {
+                                    eleveRegister.ref(element)
+                                    nomRef.current = element
+                                }}
+                                className={inputClass}
+                                placeholder="Entrez le nom de l'élève"
                             />
+
+                            {errors.eleve && (
+                                <span className={errorClass}>
+                                    {errors.eleve.message}
+                                </span>
+                            )}
 
                         </div>
 
-                        {errors.dateRetour && (
-                            <span className="mt-1 text-sm text-red-600 dark:text-red-400">
-                                {errors.dateRetour.message}
-                            </span>
-                        )}
+                        <div className="mb-8">
 
-                    </div>
+                            <label
+                                htmlFor="dateRetour"
+                                className={labelClass}
+                            >
+                                Date de retour prévue *
+                            </label>
 
-                    {/* Boutons */}
-                    <div className="flex gap-3">
+                            <div className="relative">
 
-                        <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={() => navigate(-1)}
-                        >
-                            <X size={18} className="mr-2" />
-                            Annuler
-                        </button>
+                                <Calendar
+                                    size={18}
+                                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400"
+                                />
 
-                        <button
-                            type="submit"
-                            className="btn btn-primary"
-                        >
-                            <BookPlus size={18} className="mr-2" />
-                            Confirmer le prêt
-                        </button>
+                                <input
+                                    id="dateRetour"
+                                    type="date"
+                                    {...register('dateRetour', {
+                                        required: 'La date de retour est obligatoire',
 
-                    </div>
+                                        validate: (value) =>
+                                            value >= getDateMinimaleRetour() ||
+                                            'La date de retour doit être dans le futur'
+                                    })}
+                                    className={`${inputClass} pl-10`}
+                                    min={getDateMinimaleRetour()}
+                                />
 
-                </form>
+                            </div>
+
+                            {errors.dateRetour && (
+                                <span className={errorClass}>
+                                    {errors.dateRetour.message}
+                                </span>
+                            )}
+
+                        </div>
+
+                        <div className="flex flex-col gap-3 border-t border-gray-200 pt-5 dark:border-neutral-800 sm:flex-row sm:justify-end">
+
+                            <button
+                                type="button"
+                                className={buttonSecondary}
+                                onClick={() => navigate(-1)}
+                            >
+                                <X size={18} className="mr-2" />
+                                Annuler
+                            </button>
+
+                            <button
+                                type="submit"
+                                className={buttonPrimary}
+                            >
+                                <BookPlus size={18} className="mr-2" />
+                                Confirmer le prêt
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
 
             </div>
 

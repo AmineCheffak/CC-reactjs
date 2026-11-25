@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
 import { useLibrary } from '../context/useLibrary'
 
-// Hook pour obtenir les callbacks pour les actions sur un livre
 export function useBookActions() {
   const { preterLivre, rendreLivre, supprimerLivre } = useLibrary()
 

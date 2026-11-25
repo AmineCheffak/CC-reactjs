@@ -2,239 +2,252 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useLibrary } from '../hooks/useLibrary'
 import { useEffect, useRef, useMemo } from 'react'
-import { BookPlus, X } from 'lucide-react'
+import { BookPlus, X, BookOpen, User, Tags, Calendar } from 'lucide-react'
 
 export function AjoutLivre() {
-    const { ajouterLivre } = useLibrary()
-    const navigate = useNavigate()
+  const { ajouterLivre } = useLibrary()
+  const navigate = useNavigate()
 
-    // Référence pour le champ titre
-    const titresRef = useRef(null)
+  const titresRef = useRef(null)
 
-    // Calculer l'année actuelle une seule fois (memoizé)
-    const anneeActuelle = useMemo(() => new Date().getFullYear(), [])
+  const anneeActuelle = useMemo(() => new Date().getFullYear(), [])
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm({
-        mode: 'onChange',
-        defaultValues: {
-            titre: '',
-            auteur: '',
-            genre: '',
-            annee: anneeActuelle
-        }
-    })
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      titre: '',
+      auteur: '',
+      genre: '',
+      annee: anneeActuelle
+    }
+  })
 
-    // Enregistrement du champ titre
-    const titreRegister = register('titre', {
-        required: 'Le titre est obligatoire',
-        minLength: {
-            value: 2,
-            message: 'Le titre doit contenir au moins 2 caractères'
-        }
-    })
+  const titreRegister = register('titre', {
+    required: 'Le titre est obligatoire',
+    minLength: {
+      value: 2,
+      message: 'Le titre doit contenir au moins 2 caractères'
+    }
+  })
 
-    // Focus automatique sur le champ titre
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (titresRef.current) {
-                titresRef.current.focus()
-            }
-        }, 100)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (titresRef.current) {
+        titresRef.current.focus()
+      }
+    }, 100)
 
-        return () => clearTimeout(timer)
-    }, [])
+    return () => clearTimeout(timer)
+  }, [])
 
-    // Fonction de soumission
-    const onSubmit = (data) => {
-        const nouveauLivre = {
-            titre: data.titre.trim(),
-            auteur: data.auteur.trim(),
-            genre: data.genre.trim(),
-            annee: parseInt(data.annee),
-            disponible: true,
-            prets: []
-        }
-
-        ajouterLivre(nouveauLivre)
-
-        // Redirection avec message flash
-        navigate('/livres', {
-            state: {
-                message: 'Livre ajouté avec succès',
-                type: 'success'
-            }
-        })
+  const onSubmit = (data) => {
+    const nouveauLivre = {
+      titre: data.titre.trim(),
+      auteur: data.auteur.trim(),
+      genre: data.genre.trim(),
+      annee: parseInt(data.annee),
+      disponible: true,
+      prets: []
     }
 
-    // Genres disponibles
-    const genres = [
-        'Roman',
-        'Science-fiction',
-        'Fantasy',
-        'Policier',
-        'Biographie',
-        'Histoire',
-        'Autre'
-    ]
+    ajouterLivre(nouveauLivre)
 
-    return (
-        <div className="page ajout-livre">
+    navigate('/livres', {
+      state: {
+        message: 'Livre ajouté avec succès',
+        type: 'success'
+      }
+    })
+  }
 
-            <h1>Ajouter un livre</h1>
+  const genres = [
+    'Roman',
+    'Science-fiction',
+    'Fantasy',
+    'Policier',
+    'Biographie',
+    'Histoire',
+    'Autre'
+  ]
 
-            <form
-                className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700"
-                onSubmit={handleSubmit(onSubmit)}
-            >
+  const inputClass = `
+    w-full rounded-lg border px-4 py-3 text-sm
+    bg-white text-gray-900
+    border-gray-300 placeholder:text-gray-400
+    outline-none transition-colors duration-200
+    focus:border-gray-700 focus:ring-2 focus:ring-gray-200
+    dark:bg-neutral-900 dark:text-white
+    dark:border-neutral-700 dark:placeholder:text-gray-500
+    dark:focus:border-gray-400 dark:focus:ring-neutral-800
+  `
 
-                {/* Titre */}
-                <div className="mb-5">
+  const labelClass = `
+    mb-2 block text-sm 
+    text-gray-700 dark:text-gray-300
+  `
 
-                    <label htmlFor="titre" className="block mb-2 text-sm font-medium text-gray-700 dark:text-slate-300">
-                        Titre *
-                    </label>
+  return (
+    <div className="min-h-screen bg-gray-50 p-5 text-gray-900 transition-colors duration-300 dark:bg-neutral-950 dark:text-white sm:p-8 lg:p-10">
 
-                    <input
-                        id="titre"
-                        {...titreRegister}
-                        ref={(element) => {
-                            titreRegister.ref(element)
-                            titresRef.current = element
-                        }}
-                        className="w-full min-h-9 px-3 py-2 text-base border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                        placeholder="Entrez le titre du livre"
-                    />
+      <div className="mb-8">
+        <h1 className="text-3xl tracking-tight sm:text-4xl">
+          Ajouter un livre
+        </h1>
 
-                    {errors.titre && (
-                        <span className="mt-1 text-sm text-red-600 dark:text-red-400">
-                            {errors.titre.message}
-                        </span>
-                    )}
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          Remplissez les informations pour ajouter un nouveau livre.
+        </p>
+      </div>
 
-                </div>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-auto max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-8"
+      >
 
-                {/* Auteur */}
-                <div className="mb-5">
+        <div className="mb-6">
 
-                    <label htmlFor="auteur" className="block mb-2 text-sm font-medium text-gray-700 dark:text-slate-300">
-                        Auteur *
-                    </label>
+          <label htmlFor="titre" className={labelClass}>
+            <BookOpen size={16} className="mr-2 inline-block" />
+            Titre *
+          </label>
 
-                    <input
-                        id="auteur"
-                        {...register('auteur', {
-                            required: "L'auteur est obligatoire"
-                        })}
-                        className="w-full min-h-9 px-3 py-2 text-base border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                        placeholder="Entrez le nom de l'auteur"
-                    />
+          <input
+            id="titre"
+            {...titreRegister}
+            ref={(element) => {
+              titreRegister.ref(element)
+              titresRef.current = element
+            }}
+            className={`${inputClass} ${errors.titre ? 'border-gray-700 dark:border-gray-400' : ''}`}
+            placeholder="Entrez le titre du livre"
+          />
 
-                    {errors.auteur && (
-                        <span className="mt-1 text-sm text-red-600 dark:text-red-400">
-                            {errors.auteur.message}
-                        </span>
-                    )}
-
-                </div>
-
-                {/* Genre */}
-                <div className="mb-5">
-
-                    <label htmlFor="genre" className="block mb-2 text-sm font-medium text-gray-700 dark:text-slate-300">
-                        Genre *
-                    </label>
-
-                    <select
-                        id="genre"
-                        {...register('genre', {
-                            required: 'Le genre est obligatoire'
-                        })}
-                        className="w-full min-h-9 px-3 py-2 text-base border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                    >
-
-                        <option value="">
-                            Sélectionnez un genre
-                        </option>
-
-                        {genres.map((g) => (
-                            <option key={g} value={g}>
-                                {g}
-                            </option>
-                        ))}
-
-                    </select>
-
-                    {errors.genre && (
-                        <span className="mt-1 text-sm text-red-600 dark:text-red-400">
-                            {errors.genre.message}
-                        </span>
-                    )}
-
-                </div>
-
-                {/* Année */}
-                <div className="mb-5">
-
-                    <label htmlFor="annee" className="block mb-2 text-sm font-medium text-gray-700 dark:text-slate-300">
-                        Année de publication *
-                    </label>
-
-                    <input
-                        id="annee"
-                        type="number"
-                        {...register('annee', {
-                            required: "L'année est obligatoire",
-                            valueAsNumber: true,
-                            min: {
-                                value: 1000,
-                                message: "L'année doit être supérieure à 1000"
-                            },
-                            max: {
-                                value: anneeActuelle,
-                                message: "L'année ne peut pas être supérieure à l'année actuelle"
-                            }
-                        })}
-                        className="w-full min-h-9 px-3 py-2 text-base border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                        min="1000"
-                        max={anneeActuelle}
-                    />
-
-                    {errors.annee && (
-                        <span className="mt-1 text-sm text-red-600 dark:text-red-400">
-                            {errors.annee.message}
-                        </span>
-                    )}
-
-                </div>
-
-                {/* Boutons */}
-                <div className="flex gap-3">
-
-                    <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={() => navigate(-1)}
-                    >
-                        <X size={18} className="mr-2" />
-                        Annuler
-                    </button>
-
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                    >
-                        <BookPlus size={18} className="mr-2" />
-                        Ajouter le livre
-                    </button>
-
-                </div>
-
-            </form>
+          {errors.titre && (
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              {errors.titre.message}
+            </p>
+          )}
 
         </div>
-    )
+
+        <div className="mb-6">
+
+          <label htmlFor="auteur" className={labelClass}>
+            <User size={16} className="mr-2 inline-block" />
+            Auteur *
+          </label>
+
+          <input
+            id="auteur"
+            {...register('auteur', {
+              required: "L'auteur est obligatoire"
+            })}
+            className={inputClass}
+            placeholder="Entrez le nom de l'auteur"
+          />
+
+          {errors.auteur && (
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              {errors.auteur.message}
+            </p>
+          )}
+
+        </div>
+
+        <div className="mb-6">
+
+          <label htmlFor="genre" className={labelClass}>
+            <Tags size={16} className="mr-2 inline-block" />
+            Genre *
+          </label>
+
+          <select
+            id="genre"
+            {...register('genre', {
+              required: 'Le genre est obligatoire'
+            })}
+            className={inputClass}
+          >
+            <option value="">
+              Sélectionnez un genre
+            </option>
+
+            {genres.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+
+          {errors.genre && (
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              {errors.genre.message}
+            </p>
+          )}
+
+        </div>
+
+        <div className="mb-8">
+
+          <label htmlFor="annee" className={labelClass}>
+            <Calendar size={16} className="mr-2 inline-block" />
+            Année de publication *
+          </label>
+
+          <input
+            id="annee"
+            type="number"
+            {...register('annee', {
+              required: "L'année est obligatoire",
+              valueAsNumber: true,
+              min: {
+                value: 1000,
+                message: "L'année doit être supérieure à 1000"
+              },
+              max: {
+                value: anneeActuelle,
+                message: "L'année ne peut pas être supérieure à l'année actuelle"
+              }
+            })}
+            className={inputClass}
+            min="1000"
+            max={anneeActuelle}
+          />
+
+          {errors.annee && (
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              {errors.annee.message}
+            </p>
+          )}
+
+        </div>
+
+        <div className="flex flex-col-reverse gap-3 border-t border-gray-200 pt-6 dark:border-neutral-800 sm:flex-row sm:justify-end">
+
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm text-gray-800 transition-colors hover:bg-gray-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-200 dark:hover:bg-neutral-800"
+          >
+            <X size={18} className="mr-2" />
+            Annuler
+          </button>
+
+          <button
+            type="submit"
+            className="inline-flex items-center justify-center rounded-lg bg-gray-900 px-5 py-3 text-sm text-white transition-colors hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+          >
+            <BookPlus size={18} className="mr-2" />
+            Ajouter le livre
+          </button>
+
+        </div>
+
+      </form>
+    </div>
+  )
 }

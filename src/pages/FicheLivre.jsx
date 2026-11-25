@@ -3,7 +3,15 @@ import { useLibrary } from '../hooks/useLibrary'
 import { useBookActions } from '../hooks/useBookActions'
 import { useMemo } from 'react'
 import { GenreBadge } from '../components/GenreBadge'
-import { Calendar, User, Book, RefreshCw, Trash2, AlertCircle } from 'lucide-react'
+import {
+  Calendar,
+  User,
+  Book,
+  RefreshCw,
+  Trash2,
+  AlertCircle,
+  Send
+} from 'lucide-react'
 
 export function FicheLivre() {
   const { id } = useParams()
@@ -17,27 +25,58 @@ export function FicheLivre() {
 
   const pretsEnRetard = useMemo(() => {
     if (!livre) return []
+
     const aujourdhui = new Date()
-    return livre.prets.filter(p => !p.rendu && new Date(p.dateRetourPrevue) < aujourdhui)
+
+    return livre.prets.filter(
+      p => !p.rendu && new Date(p.dateRetourPrevue) < aujourdhui
+    )
   }, [livre])
 
-  if (!livre && isLoaded) {
+  if (!isLoaded) {
     return (
-      <div className="page flex flex-col items-center justify-center min-h-[400px]">
-        <h1>Livre introuvable</h1>
-        <p className="text-gray-600 dark:text-slate-400 mb-4">Le livre demandé n'existe pas.</p>
-        <Link to="/" className="btn btn-primary">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950">
+        <p className="text-gray-600 dark:text-gray-400">
+          Chargement...
+        </p>
+      </div>
+    )
+  }
+
+  if (!livre) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 text-center dark:bg-neutral-950">
+
+        <Book size={48} className="mb-4 text-gray-400 dark:text-gray-500" />
+
+        <h1 className="text-2xl text-gray-900 dark:text-white">
+          Livre introuvable
+        </h1>
+
+        <p className="mb-6 mt-2 text-sm text-gray-500 dark:text-gray-400">
+          Le livre demandé n'existe pas.
+        </p>
+
+        <Link
+          to="/"
+          className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm text-white transition hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+        >
           <Book size={18} className="mr-2" />
-          <span>Retour à l'accueil</span>
+          Retour à l'accueil
         </Link>
+
       </div>
     )
   }
 
   const handleRendre = () => {
     handleRetour(livre.id)
+
     navigate(`/livres/${id}`, {
-      state: { message: 'Livre rendu avec succes', type: 'success' }
+      state: {
+        message: 'Livre rendu avec succes',
+        type: 'success'
+      }
     })
   }
 
@@ -51,98 +90,256 @@ export function FicheLivre() {
     return date.toLocaleDateString('fr-FR')
   }
 
+  const cardClass =
+    "rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+
+  const labelClass =
+    "text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400"
+
+  const valueClass =
+    "mt-2 text-base text-gray-900 dark:text-white"
+
   return (
-    <div className="page fiche-livre">
-      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-        <h1>{livre.titre}</h1>
-        <Link to="/livres" className="btn btn-secondary btn-sm">
+    <div className="min-h-screen bg-gray-50 p-5 text-gray-900 transition-colors duration-300 dark:bg-neutral-950 dark:text-white sm:p-8 lg:p-10">
+
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+
+        <div>
+          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+            Bibliothèque / Catalogue / Détails
+          </p>
+
+          <h1 className="text-3xl tracking-tight sm:text-4xl">
+            {livre.titre}
+          </h1>
+        </div>
+
+        <Link
+          to="/livres"
+          className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 transition hover:bg-gray-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-200 dark:hover:bg-neutral-800"
+        >
           <Book size={18} className="mr-2" />
-          <span>Retour</span>
+          Retour
         </Link>
+
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-          <span className="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wide">Auteur</span>
-          <p className="mt-1 text-sm font-medium text-gray-900 dark:text-slate-100">{livre.auteur}</p>
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <div className={cardClass}>
+          <div className="mb-3 flex items-center gap-3">
+            <User size={20} className="text-gray-700 dark:text-gray-300" />
+            <span className={labelClass}>Auteur</span>
+          </div>
+
+          <p className={valueClass}>
+            {livre.auteur}
+          </p>
         </div>
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-gray-200 dark:border-slate-700 sm:col-span-2 lg:col-span-1">
-          <span className="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wide">Genre</span>
-          <div className="mt-1">{<GenreBadge genre={livre.genre} />}</div>
+
+        <div className={cardClass}>
+          <div className="mb-3 flex items-center gap-3">
+            <Book size={20} className="text-gray-700 dark:text-gray-300" />
+            <span className={labelClass}>Genre</span>
+          </div>
+
+          <GenreBadge genre={livre.genre} />
         </div>
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-          <span className="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wide">Année</span>
-          <p className="mt-1 text-sm font-medium text-gray-900 dark:text-slate-100">{livre.annee}</p>
+
+        <div className={cardClass}>
+          <div className="mb-3 flex items-center gap-3">
+            <Calendar size={20} className="text-gray-700 dark:text-gray-300" />
+            <span className={labelClass}>Année de publication</span>
+          </div>
+
+          <p className={valueClass}>
+            {livre.annee}
+          </p>
         </div>
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-          <span className="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wide">Statut</span>
-          <p className="mt-1 text-sm font-medium text-gray-900 dark:text-slate-100">{livre.disponible ? 'Disponible' : 'Emprunt'}</p>
+
+        <div className={cardClass}>
+          <span className={labelClass}>Statut</span>
+
+          <p className={valueClass}>
+            {livre.disponible ? 'Disponible' : 'Emprunté'}
+          </p>
         </div>
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-gray-200 dark:border-slate-700 sm:col-span-2 lg:col-span-1">
-          <span className="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wide">Nombre de prêts</span>
-          <p className="mt-1 text-sm font-medium text-gray-900 dark:text-slate-100">{livre.prets.length}</p>
+
+        <div className={cardClass}>
+          <span className={labelClass}>Nombre de prêts</span>
+
+          <p className={valueClass}>
+            {livre.prets.length}
+          </p>
         </div>
+
+        <div className={cardClass}>
+          <span className={labelClass}>Prêts en retard</span>
+
+          <p className={valueClass}>
+            {pretsEnRetard.length}
+          </p>
+        </div>
+
       </div>
 
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-4">Actions</h2>
-      <div className="flex flex-wrap gap-3 mb-8">
-        {livre.disponible ? (
-          <Link to={`/livres/${livre.id}/preter`} className="btn btn-primary">
-            <Send size={18} className="mr-2" />
-            <span>Pretner le livre</span>
-          </Link>
-        ) : (
-          <button className="btn btn-success" onClick={handleRendre}>
-            <RefreshCw size={18} className="mr-2" />
-            <span>Rendre le livre</span>
+      <section className="mb-8">
+
+        <h2 className="mb-4 text-xl ">
+          Actions
+        </h2>
+
+        <div className="flex flex-wrap gap-3">
+
+          {livre.disponible ? (
+            <Link
+              to={`/livres/${livre.id}/preter`}
+              className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm text-white transition hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+            >
+              <Send size={18} className="mr-2" />
+              Prêter le livre
+            </Link>
+          ) : (
+            <button
+              onClick={handleRendre}
+              className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm text-gray-800 transition hover:bg-gray-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-200 dark:hover:bg-neutral-800"
+            >
+              <RefreshCw size={18} className="mr-2" />
+              Rendre le livre
+            </button>
+          )}
+
+          <button
+            onClick={handleSupprimerLivre}
+            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm text-gray-800 transition hover:bg-gray-100 dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-200 dark:hover:bg-neutral-800"
+          >
+            <Trash2 size={18} className="mr-2" />
+            Supprimer
           </button>
-        )}
-        <button className="btn btn-danger" onClick={handleSupprimerLivre}>
-          <Trash2 size={18} className="mr-2" />
-          <span>Supprimer</span>
-        </button>
-      </div>
 
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-4">Historique des prêts</h2>
-      {livre.prets.length === 0 ? (
-        <p className="text-gray-600 dark:text-slate-400">Aucun prêt</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse rounded-lg overflow-hidden bg-white dark:bg-slate-800 shadow-sm">
-            <thead>
-              <tr className="bg-gray-100 dark:bg-slate-700">
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wide border-b border-gray-200 dark:border-slate-600">Eleve</th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wide border-b border-gray-200 dark:border-slate-600">Date de sortie</th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wide border-b border-gray-200 dark:border-slate-600">Date de retour prevue</th>
-                <th className="p-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wide border-b border-gray-200 dark:border-slate-600">Statut</th>
-              </tr>
-            </thead>
-            <tbody>
-              {livre.prets.map((pret, index) => {
-                const enRetard = !pret.rendu && pretsEnRetard.includes(pret)
-                return (
-                  <tr key={index} className={enRetard ? 'bg-red-50 dark:bg-red-900/20' : ''}>
-                    <td className="p-3 text-sm text-gray-900 dark:text-slate-100 border-b border-gray-100 dark:border-slate-700">{pret.eleve}</td>
-                    <td className="p-3 text-sm text-gray-900 dark:text-slate-100 border-b border-gray-100 dark:border-slate-700">{formaterDate(pret.dateSortie)}</td>
-                    <td className="p-3 text-sm text-gray-900 dark:text-slate-100 border-b border-gray-100 dark:border-slate-700">{formaterDate(pret.dateRetourPrevue)}</td>
-                    <td className="p-3 text-sm font-medium text-gray-900 dark:text-slate-100 border-b border-gray-100 dark:border-slate-700">
-                      {pret.rendu ? 'Renté' : (enRetard ? 'En retard' : 'En cours')}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
         </div>
-      )}
+      </section>
+
+      <section>
+
+        <div className="mb-4">
+          <h2 className="text-xl">
+            Historique des prêts
+          </h2>
+
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Historique des emprunts de ce livre.
+          </p>
+        </div>
+
+        {livre.prets.length === 0 ? (
+
+          <div className={`${cardClass} py-12 text-center`}>
+            <Book size={35} className="mx-auto mb-3 text-gray-400 dark:text-gray-500" />
+
+            <p className=" text-gray-700 dark:text-gray-300">
+              Aucun prêt enregistré
+            </p>
+          </div>
+
+        ) : (
+
+          <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+
+            <table className="w-full min-w-[650px] border-collapse text-left">
+
+              <thead>
+                <tr className="bg-gray-100 dark:bg-neutral-800">
+                  <th className="px-5 py-4 text-xs uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                    Élève
+                  </th>
+
+                  <th className="px-5 py-4 text-xs uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                    Date de sortie
+                  </th>
+
+                  <th className="px-5 py-4 text-xs uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                    Date de retour prévue
+                  </th>
+
+                  <th className="px-5 py-4 text-xs uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                    Statut
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {livre.prets.map((pret, index) => {
+                  const enRetard = !pret.rendu && pretsEnRetard.includes(pret)
+
+                  return (
+                    <tr
+                      key={index}
+                      className="border-t border-gray-100 transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:hover:bg-neutral-800/50"
+                    >
+
+                      <td className="px-5 py-4 text-sm text-gray-900 dark:text-white">
+                        {pret.eleve}
+                      </td>
+
+                      <td className="px-5 py-4 text-sm text-gray-600 dark:text-gray-300">
+                        {formaterDate(pret.dateSortie)}
+                      </td>
+
+                      <td className="px-5 py-4 text-sm text-gray-600 dark:text-gray-300">
+                        {formaterDate(pret.dateRetourPrevue)}
+                      </td>
+
+                      <td className="px-5 py-4">
+
+                        <span
+                          className={`inline-flex rounded-full border px-3 py-1 text-xs ${
+                            pret.rendu
+                              ? 'border-gray-300 bg-gray-100 text-gray-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-300'
+                              : enRetard
+                                ? 'border-gray-500 bg-gray-200 text-gray-900 dark:border-gray-500 dark:bg-neutral-700 dark:text-white'
+                                : 'border-gray-300 bg-white text-gray-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-300'
+                          }`}
+                        >
+                          {pret.rendu
+                            ? 'Rendu'
+                            : enRetard
+                              ? 'En retard'
+                              : 'En cours'}
+                        </span>
+
+                      </td>
+
+                    </tr>
+                  )
+                })}
+              </tbody>
+
+            </table>
+          </div>
+        )}
+
+      </section>
 
       {pretsEnRetard.length > 0 && (
-        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2">
-          <AlertCircle size={18} className="text-red-600 dark:text-red-400" />
-          <strong className="text-red-800 dark:text-red-200">Attention :</strong>
-          <span className="text-red-800 dark:text-red-200">{pretsEnRetard.length} pret(s) en retard pour ce livre.</span>
+
+        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-gray-300 bg-gray-100 p-4 dark:border-neutral-700 dark:bg-neutral-900">
+
+          <AlertCircle size={20} className="shrink-0 text-gray-800 dark:text-gray-200" />
+
+          <div>
+            <p className="text-gray-900 dark:text-white">
+              Attention : prêts en retard
+            </p>
+
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              {pretsEnRetard.length} prêt(s) en retard pour ce livre.
+            </p>
+          </div>
+
         </div>
       )}
+
     </div>
   )
 }

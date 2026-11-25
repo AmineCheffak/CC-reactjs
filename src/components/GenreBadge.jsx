@@ -21,7 +21,7 @@ export function GenreBadge({ genre }) {
   const styles = getBadgeStyles()
 
   return (
-    <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${styles}`}>
+    <span className={`inline-block px-3 py-1 text-xs rounded-full ${styles}`}>
       {genre}
     </span>
   )
