@@ -1,2 +1,2 @@
-// Hook personnalisé pour accéder au contexte de la bibliothèque
+// Hook pour acceder au contexte de la bibliotheque
 export { useLibrary } from '../context/useLibrary'
