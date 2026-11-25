@@ -66,42 +66,34 @@ const LIVRES_EXEMPLE = [
   }
 ]
 
-// Provider pour la bibliothèque (séparé du Context pour Fast Refresh)
 export function LibraryProvider({ children }) {
   const [state, dispatch] = useReducer(libraryReducer, initialState)
 
-  // Chargement depuis localStorage au montage
   useEffect(() => {
     try {
       const data = localStorage.getItem(STORAGE_KEY)
       if (data) {
         const parsed = JSON.parse(data)
-        // Vérifier que c'est un tableau valide
         if (Array.isArray(parsed)) {
           dispatch({ type: 'CHARGER', payload: parsed })
         } else {
-          // Données invalides, charger les exemples
           dispatch({ type: 'CHARGER', payload: LIVRES_EXEMPLE })
         }
       } else {
-        // Pas de données, charger les exemples
         dispatch({ type: 'CHARGER', payload: LIVRES_EXEMPLE })
       }
     } catch (e) {
-      // JSON invalide, charger les exemples
       console.warn('Erreur lecture localStorage:', e)
       dispatch({ type: 'CHARGER', payload: LIVRES_EXEMPLE })
     }
   }, [])
 
-  // Sauvegarde dans localStorage à chaque changement (sauf au chargement initial)
   useEffect(() => {
     if (state.isLoaded) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.livres))
     }
   }, [state.livres, state.isLoaded])
 
-  // Actions exposées via le contexte
   const ajouterLivre = (livre) => dispatch({ type: 'AJOUTER_LIVRE', payload: livre })
   const supprimerLivre = (id) => dispatch({ type: 'SUPPRIMER_LIVRE', payload: id })
   const preterLivre = (id, eleve, dateSortie, dateRetourPrevue) =>
