@@ -1,19 +1,76 @@
-# React + Vite
+# BiblioApp - Application de Gestion de Bibliothèque
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application React de gestion de bibliothèque avec persistance localStorage.
 
-Currently, two official plugins are available:
+## Fonctionnalités
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Catalogue de livres** : Affichage, recherche et filtres par genre et disponibilité
+- **Gestion des prêts** : Emprunter et rendre des livres avec validation des dates
+- **Statistiques** : Tableau de bord avec statistiques en temps réel
+- **Thème sombre/clair** : Toggle thème avec sauvegarde dans localStorage
+- **Persistence** : Toutes les données sont sauvegardées dans localStorage
 
-## React Compiler
+## Technologies
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- **React 18** avec Router v6
+- **React Hook Form** pour la validation des formulaires
+- **React Context** pour la gestion d'état globale
+- **CSS Pur** sans dépendance UI externe
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+## Installation
 
-## Expanding the ESLint configuration
+```bash
+npm install
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Structure du projet
+
+```
+src/
+├── App.jsx                    # Routeur principal
+├── App.css                    # Styles principaux
+├── context/
+│   ├── LibraryContext.jsx     # Context null
+│   ├── LibraryContextProvider.jsx  # Provider avec persistance
+│   ├── ThemeContext.jsx       # Theme context
+│   └── ThemeContextProvider.jsx    # Theme toggle
+├── hooks/
+│   ├── useLibrary.js          # Hook contexte bibliothèque
+│   ├── useTheme.js            # Hook contexte thème
+│   └── useBookActions.js      # Callbacks memoisés
+├── components/
+│   ├── Navbar.jsx             # Navigation principale
+│   ├── BookCard.jsx           # Carte livre
+│   └── GenreBadge.jsx         # Badge genre
+└── pages/
+    ├── Dashboard.jsx          # Tableau de bord stats
+    ├── Catalogue.jsx          # Catalogue avec recherche
+    ├── AjoutLivre.jsx         # Formulaire ajout livre
+    ├── Pret.jsx               # Formulaire prêt
+    ├── FicheLivre.jsx         # Détails livre
+    └── PageIntrouvable.jsx    # 404
+```
+
+## Hooks React implémentés
+
+- `useState` : Gestion état formulaires et filtres
+- `useReducer` : Actions sur les livres (ajouter, préter, rendre, supprimer)
+- `useContext` : Accès aux contextes
+- `useEffect` : Auto-focus et persistance
+- `useRef` : Références DOM pour focus
+- `useMemo` : Statistiques et filtres mémoisés
+- `useCallback` : Callbacks stabiles pour actions
+
+## Commands
+
+```bash
+npm run dev     # Démarrage en développement
+npm run build   # Build production
+npm run lint    # Linting ESLint
+npm run preview # Preview du build
+```
+
+## Authors
+
+Claude Code & Amine Cheffak
